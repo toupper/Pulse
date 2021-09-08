@@ -62,14 +62,14 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
 
     public override func responds(to aSelector: Selector!) -> Bool {
         if interceptedSelectors.contains(aSelector) {
-          debugPrint("intercepted selectors, true")
+          debugPrint("\(aSelector) intercepted selectors, true")
             return true
         }
       
       let actualDelegateRespondsToSelector = (actualDelegate?.responds(to: aSelector) ?? false)
       let superRespondsToSelector = super.responds(to: aSelector)
       
-      debugPrint("actualDelegateRespondsToSelector \(actualDelegateRespondsToSelector) superRespondsToSelector \(superRespondsToSelector)")
+      debugPrint("\(aSelector) actualDelegateRespondsToSelector \(actualDelegateRespondsToSelector) superRespondsToSelector \(superRespondsToSelector)")
       
         return actualDelegateRespondsToSelector || superRespondsToSelector
     }
@@ -77,7 +77,7 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
     public override func forwardingTarget(for selector: Selector!) -> Any? {
         let forwardingTarget = interceptedSelectors.contains(selector) ? nil : actualDelegate
       
-      debugPrint("forwardingTarget \(String(describing: forwardingTarget))")
+      debugPrint("\(selector) forwardingTarget \(String(describing: forwardingTarget))")
       
       return forwardingTarget
     }
