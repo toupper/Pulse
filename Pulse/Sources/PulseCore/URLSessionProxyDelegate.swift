@@ -25,10 +25,10 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
         self.logger = logger
     }
 
-    public func urlSession(_ session: URLSession,
-                           didBecomeInvalidWithError error: Error?) {
+   // public func urlSession(_ session: URLSession,//
+    //                       didBecomeInvalidWithError error: Error?) {
       
-    }
+    //}
   
     // MARK: URLSessionTaskDelegate
 
@@ -62,13 +62,24 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
 
     public override func responds(to aSelector: Selector!) -> Bool {
         if interceptedSelectors.contains(aSelector) {
+          debugPrint("intercepted selectors, true")
             return true
         }
-        return (actualDelegate?.responds(to: aSelector) ?? false) || super.responds(to: aSelector)
+      
+      let actualDelegateRespondsToSelector = (actualDelegate?.responds(to: aSelector) ?? false)
+      let superRespondsToSelector = super.responds(to: aSelector)
+      
+      debugPrint("actualDelegateRespondsToSelector \(actualDelegateRespondsToSelector) superRespondsToSelector \(superRespondsToSelector)")
+      
+        return actualDelegateRespondsToSelector || superRespondsToSelector
     }
 
     public override func forwardingTarget(for selector: Selector!) -> Any? {
-        interceptedSelectors.contains(selector) ? nil : actualDelegate
+        let forwardingTarget = interceptedSelectors.contains(selector) ? nil : actualDelegate
+      
+      debugPrint("forwardingTarget \(String(describing: forwardingTarget))")
+      
+      return forwardingTarget
     }
 }
 
