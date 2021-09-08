@@ -24,11 +24,13 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
         ]
         self.logger = logger
     }
+  
+  // MARK: URLSessionDelegate
 
-   // public func urlSession(_ session: URLSession,//
-    //                       didBecomeInvalidWithError error: Error?) {
-      
-    //}
+    public func urlSession(_ session: URLSession,
+                           didBecomeInvalidWithError error: Error?) {
+      // Workaround for issue https://github.com/kean/Pulse/issues/36
+    }
   
     // MARK: URLSessionTaskDelegate
 
@@ -62,24 +64,13 @@ public final class URLSessionProxyDelegate: NSObject, URLSessionTaskDelegate, UR
 
     public override func responds(to aSelector: Selector!) -> Bool {
         if interceptedSelectors.contains(aSelector) {
-          debugPrint("\(aSelector) intercepted selectors, true")
             return true
         }
-      
-      let actualDelegateRespondsToSelector = (actualDelegate?.responds(to: aSelector) ?? false)
-      let superRespondsToSelector = super.responds(to: aSelector)
-      
-      debugPrint("\(aSelector) actualDelegateRespondsToSelector \(actualDelegateRespondsToSelector) superRespondsToSelector \(superRespondsToSelector)")
-      
-        return actualDelegateRespondsToSelector || superRespondsToSelector
+        return (actualDelegate?.responds(to: aSelector) ?? false) || super.responds(to: aSelector)
     }
 
     public override func forwardingTarget(for selector: Selector!) -> Any? {
-        let forwardingTarget = interceptedSelectors.contains(selector) ? nil : actualDelegate
-      
-      debugPrint("\(selector) forwardingTarget \(String(describing: forwardingTarget))")
-      
-      return forwardingTarget
+        interceptedSelectors.contains(selector) ? nil : actualDelegate
     }
 }
 
